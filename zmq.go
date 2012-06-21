@@ -97,16 +97,16 @@ const (
 	DOWNSTREAM = PUSH
 
 	// NewSocket options
-	HWM               = UInt64SocketOption(C.ZMQ_HWM)
-	SWAP              = Int64SocketOption(C.ZMQ_SWAP)
+	//HWM               = UInt64SocketOption(C.ZMQ_HWM)
+	//SWAP              = Int64SocketOption(C.ZMQ_SWAP)
 	AFFINITY          = UInt64SocketOption(C.ZMQ_AFFINITY)
 	IDENTITY          = StringSocketOption(C.ZMQ_IDENTITY)
 	SUBSCRIBE         = StringSocketOption(C.ZMQ_SUBSCRIBE)
 	UNSUBSCRIBE       = StringSocketOption(C.ZMQ_UNSUBSCRIBE)
 	RATE              = Int64SocketOption(C.ZMQ_RATE)
 	RECOVERY_IVL      = Int64SocketOption(C.ZMQ_RECOVERY_IVL)
-	RECOVERY_IVL_MSEC = Int64SocketOption(C.ZMQ_RECOVERY_IVL_MSEC)
-	MCAST_LOOP        = Int64SocketOption(C.ZMQ_MCAST_LOOP)
+	//RECOVERY_IVL_MSEC = Int64SocketOption(C.ZMQ_RECOVERY_IVL_MSEC)
+	//MCAST_LOOP        = Int64SocketOption(C.ZMQ_MCAST_LOOP)
 	SNDBUF            = UInt64SocketOption(C.ZMQ_SNDBUF)
 	RCVBUF            = UInt64SocketOption(C.ZMQ_RCVBUF)
 	RCVMORE           = UInt64SocketOption(C.ZMQ_RCVMORE)
@@ -119,7 +119,7 @@ const (
 	BACKLOG           = IntSocketOption(C.ZMQ_BACKLOG)
 
 	// Send/recv options
-	NOBLOCK = SendRecvOption(C.ZMQ_NOBLOCK)
+	// NOBLOCK = SendRecvOption(C.ZMQ_NOBLOCK)
 	SNDMORE = SendRecvOption(C.ZMQ_SNDMORE)
 )
 
@@ -357,7 +357,7 @@ func (s *zmqSocket) Send(data []byte, flags SendRecvOption) error {
 		C.memcpy(unsafe.Pointer(C.zmq_msg_data(&m)), unsafe.Pointer(&data[0]), size) // XXX I hope this works...(seems to)
 	}
 
-	if C.zmq_send(s.s, &m, C.int(flags)) != 0 {
+	if C.zmq_sendmsg(s.s, &m, C.int(flags)) != 0 {
 		// zmq_send did not take ownership, free message
 		C.zmq_msg_close(&m)
 		return errno()
@@ -376,7 +376,7 @@ func (s *zmqSocket) Recv(flags SendRecvOption) (data []byte, err error) {
 	}
 	defer C.zmq_msg_close(&m)
 	// Receive into message
-	if C.zmq_recv(s.s, &m, C.int(flags)) != 0 {
+	if C.zmq_recvmsg(s.s, &m, C.int(flags)) != 0 {
 		err = errno()
 		return
 	}
