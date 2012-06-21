@@ -118,6 +118,7 @@ const (
 	RECONNECT_IVL_MAX = IntSocketOption(C.ZMQ_RECONNECT_IVL_MAX)
 	BACKLOG           = IntSocketOption(C.ZMQ_BACKLOG)
 	SNDTIMEO          = IntSocketOption(C.ZMQ_SNDTIMEO)
+	RCVTIMEO          = IntSocketOption(C.ZMQ_RCVTIMEO)
 
 	// Send/recv options
 	// NOBLOCK = SendRecvOption(C.ZMQ_NOBLOCK)
