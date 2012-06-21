@@ -117,10 +117,12 @@ const (
 	RECONNECT_IVL     = IntSocketOption(C.ZMQ_RECONNECT_IVL)
 	RECONNECT_IVL_MAX = IntSocketOption(C.ZMQ_RECONNECT_IVL_MAX)
 	BACKLOG           = IntSocketOption(C.ZMQ_BACKLOG)
+	SNDTIMEO          = IntSocketOption(C.ZMQ_SNDTIMEO)
 
 	// Send/recv options
 	// NOBLOCK = SendRecvOption(C.ZMQ_NOBLOCK)
-	SNDMORE = SendRecvOption(C.ZMQ_SNDMORE)
+	DONTWAIT          = SendRecvOption(C.ZMQ_DONTWAIT) 
+	SNDMORE           = SendRecvOption(C.ZMQ_SNDMORE)
 )
 
 type zmqErrno syscall.Errno
@@ -369,14 +371,17 @@ func (s *zmqSocket) Send(data []byte, flags SendRecvOption) error {
 // int zmq_recv (void *s, zmq_msg_t *msg, int flags);
 func (s *zmqSocket) Recv(flags SendRecvOption) (data []byte, err error) {
 	// Allocate and initialise a new zmq_msg_t
+	err = nil
 	var m C.zmq_msg_t
 	if C.zmq_msg_init(&m) != 0 {
+		println("init")
 		err = errno()
 		return
 	}
 	defer C.zmq_msg_close(&m)
 	// Receive into message
 	if C.zmq_recvmsg(s.s, &m, C.int(flags)) != 0 {
+		println("recvmsg")
 		err = errno()
 		return
 	}
